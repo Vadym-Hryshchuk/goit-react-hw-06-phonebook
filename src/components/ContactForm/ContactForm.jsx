@@ -1,6 +1,10 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
+import toast from 'react-hot-toast';
+import { nanoid } from 'nanoid';
 import { AddContactForm } from './ContactForm.styled';
+import { addContact } from 'redux/contactsSlice';
 
 const schema = Yup.object().shape({
   name: Yup.string()
@@ -16,12 +20,25 @@ const schema = Yup.object().shape({
 });
 const initialValues = { name: '', number: '' };
 
-export const ContactForm = ({ onSubmit }) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contactsStore = useSelector(state => state.contacts);
+
+  const handleSubmit = ({ name, number }, { resetForm }) => {
+    if (contactsStore.find(value => value.name === name)) {
+      toast.error(`${name} is already in the contact list`);
+      return;
+    }
+    dispatch(addContact({ id: nanoid(), name, number }));
+    toast.success(`${name} added to contact list`);
+    resetForm();
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       <AddContactForm autoComplete="off">
         <label>
