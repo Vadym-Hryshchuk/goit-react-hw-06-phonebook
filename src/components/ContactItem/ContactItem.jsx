@@ -13,7 +13,7 @@ export const ContactItem = ({ id, name, number }) => {
         type="button"
         onClick={() => {
           dispatch(removeContact(id));
-          toast.success(`The contact has been deleted`);
+          toast.success(`The contact ${name} has been deleted`);
         }}
       >
         Remove
